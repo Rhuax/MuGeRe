@@ -2,8 +2,8 @@ import os
 import csv
 from subprocess import run, PIPE
 
-rootdir = '\\fma_small'
-dataset_mono_root = '\\fma_small_final'
+rootdir = 'fma_small\\'
+dataset_mono_root = 'fma_small_final\\'
 
 def set_to_mono(path_file, tmp_name):
     command = "C:\\Users\\Stefano\\Desktop\\prova\\sox-14-4-2\\sox.exe {} {} remix 1,2".format(path_file, tmp_name)
