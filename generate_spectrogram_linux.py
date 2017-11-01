@@ -15,7 +15,9 @@ def stereo2mono(a):
 def audio2spec():
     c='sox temp.mp3 -n spectrogram -r -x 800 -y 150 -o temp.png'
     run(c,shell=True,stdin=PIPE, stdout=PIPE)
-
+"""
+Split original spectrogram in chunks wide 160px
+"""
 def split_chunks(base_name):
     for j in range(0,800,160):
         i=Image.open('temp.png')
@@ -39,10 +41,10 @@ for f in glob.glob(dataset+'*/*.mp3'):
     name=os.path.basename(f)[0:-4]
     name+='_0.png'
     found=False
+    """If an mp3 has been already processed jump"""
     for d,s,fii in os.walk(final_dataset):
         if name in fii:
             found=True
-            print("Salto")
             break
     if found==False:
         try:
@@ -58,7 +60,7 @@ for f in glob.glob(dataset+'*/*.mp3'):
             split_chunks(final_dataset+genre+'/'+os.path.basename(f)[0:-4])
 
         except CouldntDecodeError:
-            print("Un mp3 fa cagare al cazzo")
+            print("Found a bad mp3, skipping it.")
     i += 1
     a = (i / 8000) * 100
     a = int(a)
@@ -67,4 +69,4 @@ for f in glob.glob(dataset+'*/*.mp3'):
         prev = a
 
 
-print("Trovati "+str(mono)+" file mono -.-'")
+print("Found "+str(mono)+" mono files.")
