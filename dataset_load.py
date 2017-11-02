@@ -66,12 +66,12 @@ model.add(MaxPooling2D(pool_size=(2, 2), strides=(1,1)))
 #   H = (7-2)/1 + 1 = 6
 #   D = 256
 
-model.add(Dense(units=256, activation='sigmoid'))
+model.add(Dense(units=256, activation='relu'))
 #FCLayer_1 output dimensions:
 #   dim = 256
 #   weights = 6*6*256*256 = 2,359,296
 
-model.add(Dense(units=8, activation='sigmoid'))
+model.add(Dense(units=8, activation='softmax'))
 #FCLayer_1 output dimensions:
 #   dim = 8
 #   weights = 256*8 = 2048
