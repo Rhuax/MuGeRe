@@ -80,8 +80,22 @@ model.add(Dense(units=8, activation='sigmoid'))
 #RMSprop optimizer
 opt = keras.optimizers.rmsprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
 
-#Training
+#Compile model
 model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
 
+"""
+
+#Training
+model.fit_generator(
+        train_generator,
+        epochs=50,
+        validation_data=test_generator,
+        validation_steps=30,
+        shuffle=True)
+
+#Evaluation
+model.evaluate(X_test, Y_test, verbose=1)
+
+"""
