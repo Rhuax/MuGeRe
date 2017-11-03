@@ -12,7 +12,7 @@ import numpy as np
 import os
 
 
-batchSize = 32
+batchSize = 128
 epochs = 30
 num_classes = 8
 
@@ -28,7 +28,7 @@ test_generator = test_datagen.flow_from_directory(directory=testsetDir, batch_si
 
 model = Sequential()
 
-model.add(Conv2D(input_shape=(160, 150, 3), filters=32, kernel_size=(3,3), strides=2, activation="elu", kernel_regularizer='l2'))
+model.add(Conv2D(input_shape=(160, 150, 3), filters=32, kernel_size=(2,2), strides=2, activation="elu", kernel_regularizer='l2'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
 
 model.add(Conv2D(filters=64, kernel_size=(2,2), strides=2, activation="elu", kernel_regularizer='l2'))
@@ -39,12 +39,10 @@ model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
 
 model.add(Flatten())
 model.add(Dense(512, activation='elu', kernel_regularizer='l2'))
-model.add(Dropout(0.7))
+#model.add(Dropout(0.5))
 model.add(Dense(256, activation='elu', kernel_regularizer='l2'))
 model.add(Dropout(0.5))
-model.add(Dense(128, activation='elu', kernel_regularizer='l2'))
-model.add(Dropout(0.3))
-model.add(Dense(num_classes, activation='softmax', kernel_regularizer='l2'))
+model.add(Dense(num_classes, activation='softmax'))
 
 #Compile model
 model.compile(loss='categorical_crossentropy',
