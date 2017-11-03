@@ -1,21 +1,25 @@
 from __future__ import print_function
-import keras
+import sys
+import time
+import datetime
 
 from keras.preprocessing.image import ImageDataGenerator
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten, ZeroPadding2D
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
+from keras.callbacks import TensorBoard
 
 
-import numpy as np
-import os
 
 
 batchSize = 128
 epochs = 30
 num_classes = 8
+tb=TensorBoard(batch_size=batchSize,log_dir='./logs')#logs
 
+
+callbacks=[tb]
 trainsetDir = 'fma_train/'
 testsetDir = 'fma_test/'
 
@@ -50,7 +54,13 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 #Summary
-model.summary()
+old_stdoud = sys.stdout
+f=open('tuning_logs/'+str(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S')),'w')
+sys.stdout = f
+print(model.summary())
+f.close()
+sys.stdout = old_stdoud
+
 
 #Training
 model.fit_generator(
@@ -58,4 +68,5 @@ model.fit_generator(
         epochs=epochs,
         validation_data=test_generator,
         validation_steps=8000//batchSize,
-        steps_per_epoch=31985//batchSize)
+        steps_per_epoch=31985//batchSize,
+        callbacks=callbacks)
