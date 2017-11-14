@@ -6,8 +6,9 @@ from subprocess import run, PIPE
 from PIL import Image
 from pydub import AudioSegment
 from pydub.exceptions import CouldntDecodeError
-dataset='fma_small/'
-final_dataset='fma_final/'
+
+dataset='fma_medium/'
+final_dataset='fma_medium_final/'
 
 def stereo2mono(a):
     c='sox '+a+' temp.mp3 remix 1,2'
@@ -25,7 +26,7 @@ def split_chunks(base_name):
         crop=i.crop(box)
         crop.save(base_name+'_'+str(j//160)+'.png')
 
-with open('dataset.csv',mode='r') as f:
+with open('dataset_medium.csv',mode='r') as f:
     reader=csv.reader(f)
     dict={r[0]:r[1] for r in reader}
 
@@ -62,7 +63,7 @@ for f in glob.glob(dataset+'*/*.mp3'):
         except CouldntDecodeError:
             print("Found a bad mp3, skipping it.")
     i += 1
-    a = (i / 8000) * 100
+    a = (i / 25000) * 100
     a = int(a)
     if a != prev:
         print(str(a) + '%')
