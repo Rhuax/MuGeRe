@@ -1,0 +1,25 @@
+#Batch Size: 128
+#Epochs: 30
+#Training set normalization: ON
+
+model = Sequential()
+
+model.add(Conv2D(input_shape=(160, 150, 3), filters=32, kernel_size=(5,5), strides=(5,5), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(3,3),activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=128, kernel_size=(2,2), strides=(2,2),activation="elu", kernel_initializer='glorot_normal'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Flatten())
+model.add(Dense(num_classes, activation='softmax'))
+
+#Compile model
+
+optimizer = 'adam'
+
+model.compile(loss='categorical_crossentropy',
+
+              optimizer=optimizer,
+
+              metrics=['accuracy'])
+
+@@@RESULTS@@@
+loss: 1.0609 - acc: 0.6475 - val_loss: 1.7246 - val_acc: 0.5195

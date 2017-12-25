@@ -1,0 +1,59 @@
+#Batch Size: 128
+#Epochs: 30
+#Training set normalization: ON
+
+
+model = Sequential()
+
+model.add(Conv2D(input_shape=(160, 150, 3), filters=32, kernel_size=(2,2), strides=(2,2), activation="elu"))
+model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(2,2),activation="elu"))
+
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+
+model.add(Conv2D(filters=128, kernel_size=(2,2), strides=(2,2), activation="elu"))
+model.add(Conv2D(filters=256, kernel_size=(2,2), strides=(2,2), activation="elu"))
+
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Flatten())
+
+model.add(Dense(256, activation='elu'))
+model.add(Dense(num_classes, activation='softmax'))
+
+
+#################
+
+model.compile(loss='categorical_crossentropy',
+
+              optimizer='rmsprop',
+
+              metrics=['accuracy'])
+'''
+@@@RESULTS@@@
+	loss: 0.1543 - acc: 0.9492 - val_loss: 5.3398 - val_acc: 0.4452
+
+	With optimizer Adam
+	loss: 0.1253 - acc: 0.9573 - val_loss: 5.1165 - val_acc: 0.4490
+	
+	MEMO: provare con più epochs
+
+'''
+OPTIMIZER DESCRIPTION
+
+1)AdaGrad penalizes the learning rate too harshly for parameters which are frequently updated and gives 
+more learning rate to sparse parameters,parameters that are not updated as frequently. 
+In several problems often the most critical information is present in the data that is not as frequent but sparse. 
+So if the problem you are working on deals with sparse data such as tf-idf,etc. Adagrad can be useful.
+
+2)AdaDelta,RMSProp almost works on similar lines with the only difference in Adadelta you don't require 
+an initial learning rate constant to start with.
+
+3)Adam combines the good properties of Adadelta and RMSprop and hence tend to do better for most of the problems.
+
+4)Stochastic gradient descent is very basic and is seldom used now. 
+One problem is with the global learning rate associated with the same. 
+Hence it doesn't work well when the parameters are in different scales since a low learning rate 
+will make the learning slow while a large learning rate might lead to oscillations. 
+Also Stochastic gradient descent generally has a hard time escaping the saddle points. 
+Adagrad,Adadelta,RMSprop and ADAM generally handle saddle points better. 
+SGD with momentum renders some speed to the optimization and also helps escape local minima better.
+'''

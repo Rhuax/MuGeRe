@@ -1,0 +1,36 @@
+#Batch Size: 128
+#Epochs: 23
+#Training set normalization: ON
+
+#Rispetto a T1: Numero filtri raddoppiato ai layer convoluzionali, kernel initializer xavier, aggiunto altro layer dense per struttura piramidale
+
+model = Sequential()
+
+model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=128, kernel_size=(2,2), strides=(2,2),activation="elu", kernel_initializer='glorot_normal'))
+
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+
+model.add(Conv2D(filters=256, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=512, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
+
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Flatten())
+
+model.add(Dense(1024, activation='elu', kernel_initializer='glorot_normal'))
+model.add(Dense(256, activation='elu', kernel_initializer='glorot_normal'))
+model.add(Dense(num_classes, activation='softmax'))
+
+
+#################
+
+model.compile(loss='categorical_crossentropy',
+
+              optimizer='rmsprop',
+
+              metrics=['accuracy'])
+'''
+@@@RESULTS@@@
+	30 epochs ---> loss: 0.1406 - acc: 0.9561 - val_loss: 4.7866 - val_acc: 0.4781
+
+'''
