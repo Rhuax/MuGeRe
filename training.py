@@ -3,7 +3,9 @@ import os
 import sys
 import time
 import datetime
+from collections import Counter
 
+import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import rmsprop
 from keras.models import Sequential
@@ -11,13 +13,27 @@ from keras.layers import Dense, Dropout, Activation, Flatten, ZeroPadding2D
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
 from keras.callbacks import TensorBoard,ModelCheckpoint
 
-batchSize = 32
+import glob
+
+batchSize = 128
 epochs = 30
 num_classes = 16
 nb_train_examples=99924
 nb_valid_examples=25001
 
+trainsetDir = 'fma_medium_train/'
+testsetDir = 'fma_medium_test/'
 
+
+def calculateGenreWeight():
+    weights=np.zeros(num_classes)
+    i=0
+    for genre in sorted(os.listdir(trainsetDir)):
+        weights[i]=len(glob.glob(trainsetDir+genre+'/*'))
+        i+=1
+    proata=dict(zip(range(num_classes), np.amax(weights)/weights))
+    return proata
+calculateGenreWeight()
 tb=TensorBoard(batch_size=batchSize,log_dir='./logs')#logs
 model_path=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S')
 os.mkdir('tuning_logs/'+model_path)
@@ -25,8 +41,6 @@ checkpoint = ModelCheckpoint('tuning_logs/'+model_path+'/'+model_path+'.hdf5', m
 
 
 callbacks=[tb,checkpoint]
-trainsetDir = 'fma_medium_train/'
-testsetDir = 'fma_medium_test/'
 
 # Data generators
 train_datagen = ImageDataGenerator(rescale=1./255)
@@ -37,29 +51,24 @@ test_generator = test_datagen.flow_from_directory(directory=testsetDir, batch_si
 
 model = Sequential()
 
-model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=2, activation="elu", kernel_initializer='he_normal'))
-model.add(Conv2D(filters=128, kernel_size=2,strides=2,  activation='elu', kernel_initializer='he_normal'))
-model.add(MaxPooling2D(pool_size=2, padding='same'))
-
-model.add(Conv2D(filters=256, kernel_size=1,strides=1, activation='elu', kernel_initializer='he_normal'))
-model.add(MaxPooling2D(pool_size=2, padding='same'))
-
-model.add(Conv2D(filters=128, kernel_size=2,strides=2, activation='elu', kernel_initializer='he_normal'))
-model.add(MaxPooling2D(pool_size=2, padding='same'))
-
+model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=(3,3), strides=(3,3), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=32, kernel_size=(2,2), strides=(2,2),activation="elu", kernel_initializer='glorot_normal'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Conv2D(filters=16, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
 model.add(Flatten())
-model.add(Dense(256))
-
-model.add(Activation('relu'))
 model.add(Dropout(0.5))
-
+model.add(Dense(128, activation='elu', kernel_initializer='glorot_normal'))
 model.add(Dense(num_classes, activation='softmax'))
-opt=rmsprop()
-#Compile model
-model.compile(loss='categorical_crossentropy',
-              optimizer=opt,
-              metrics=['accuracy'])
 
+#Compile model
+
+optimizer = 'adam'
+
+model.compile(loss='categorical_crossentropy',
+
+              optimizer=optimizer,
+
+              metrics=['accuracy'])
 #Summary
 
 model.summary()
@@ -81,4 +90,5 @@ model.fit_generator(
         validation_data=test_generator,
         validation_steps=8000//batchSize,
         steps_per_epoch=nb_train_examples//batchSize,
-        callbacks=callbacks)
+        callbacks=callbacks,
+        class_weight=calculateGenreWeight())
