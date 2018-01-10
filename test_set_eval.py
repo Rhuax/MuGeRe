@@ -2,7 +2,7 @@ import numpy as np
 from keras.optimizers import SGD
 from keras.models import model_from_yaml
 from keras.preprocessing.image import ImageDataGenerator
-
+import os
 np.set_printoptions(suppress=True)
 
 img_width=160
@@ -67,5 +67,11 @@ for i in range(np.size(all_pred)):
         column = 15
 
     confusion_matrix[all_pred[i]][column] += 1
+
+
+classes=sorted(os.listdir('fma_medium_train'))
+for i in range(16):
+    print(classes[i],end=' ')
+    print(confusion_matrix[i][i]/np.sum(confusion_matrix[:,i]))
 
 print(confusion_matrix)
