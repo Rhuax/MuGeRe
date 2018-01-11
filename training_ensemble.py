@@ -11,9 +11,10 @@ from keras import Model, Input
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.layers import AveragePooling2D
 from keras.layers import Dense, Activation, Flatten, BatchNormalization, Convolution2D, merge,Conv2D
+from keras.optimizers import RMSprop, Adam
 from keras.preprocessing.image import ImageDataGenerator
 
-batchSize = 128
+batchSize = 16
 epochs = 30
 """
 num_classes = 16
@@ -61,7 +62,7 @@ train_datagen = ImageDataGenerator(rescale=1. / 255)
 test_datagen = ImageDataGenerator(rescale=1. / 255)
 
 train_generator = train_datagen.flow_from_directory(directory=trainsetDir, batch_size=batchSize, target_size=(160, 150),
-                                                    shuffle=False)
+                                                    shuffle=True)
 test_generator = test_datagen.flow_from_directory(directory=testsetDir, batch_size=batchSize, target_size=(160, 150))
 
 """
@@ -175,7 +176,7 @@ model.add(Dense(num_classes, activation='softmax'))
 
 # Compile model
 
-optimizer = 'adam'
+optimizer = Adam()
 
 model.compile(loss='categorical_crossentropy',
 
