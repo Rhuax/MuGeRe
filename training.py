@@ -39,7 +39,7 @@ def calculateGenreWeight():
 tb = TensorBoard(batch_size=batchSize, log_dir='./logs')  # logs
 model_path = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S')
 os.mkdir('tuning_logs/' + model_path)
-checkpoint = ModelCheckpfucKthoint('tuning_logs/' + model_path + '/' + model_path + '.hdf5', monitor='val_acc', verbose=1,
+checkpoint = ModelCheckpoint('tuning_logs/' + model_path + '/' + model_path + '.hdf5', monitor='val_acc', verbose=1,
                              save_best_only=True, mode='max')
 
 callbacks = [tb, checkpoint]
