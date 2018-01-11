@@ -18,12 +18,13 @@ import glob
 batchSize = 128
 epochs = 30
 num_classes = 16
-nb_train_examples = 99924
-nb_valid_examples = 25001
+nb_train_examples = 96214
+nb_valid_examples = 24066
 
 trainsetDir = 'fma_medium_train/'
 testsetDir = 'fma_medium_test/'
 
+num_classes=len(os.listdir(trainsetDir))
 
 def calculateGenreWeight():
     weights = np.zeros(num_classes)
@@ -38,7 +39,7 @@ def calculateGenreWeight():
 tb = TensorBoard(batch_size=batchSize, log_dir='./logs')  # logs
 model_path = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S')
 os.mkdir('tuning_logs/' + model_path)
-checkpoint = ModelCheckpoint('tuning_logs/' + model_path + '/' + model_path + '.hdf5', monitor='val_acc', verbose=1,
+checkpoint = ModelCheckpfucKthoint('tuning_logs/' + model_path + '/' + model_path + '.hdf5', monitor='val_acc', verbose=1,
                              save_best_only=True, mode='max')
 
 callbacks = [tb, checkpoint]
@@ -52,7 +53,6 @@ train_generator = train_datagen.flow_from_directory(directory=trainsetDir, batch
 test_generator = test_datagen.flow_from_directory(directory=testsetDir, batch_size=batchSize, target_size=(160, 150))
 
 model = Sequential()
-
 model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=(3, 3), strides=(3, 3), activation="elu",
                  kernel_initializer='glorot_normal'))
 model.add(Conv2D(filters=32, kernel_size=(2, 2), strides=(2, 2), activation="elu", kernel_initializer='glorot_normal'))
@@ -66,12 +66,7 @@ model.add(Dense(num_classes, activation='softmax'))
 # Compile model
 
 optimizer = 'adam'
-
-model.compile(loss='categorical_crossentropy',
-
-              optimizer=optimizer,
-
-              metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy',optimizer=optimizer,metrics=['accuracy'])
 # Summary
 
 model.summary()

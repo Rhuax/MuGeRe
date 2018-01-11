@@ -10,10 +10,10 @@ img_height=150
 
 
 
-f = open('arch_weights/MuGeRe Architecture_T7.yaml', 'r')
+f = open('tuning_logs/2018-01-10 16-27-57/2018-01-10 16-27-57_ARCH.json', 'r')
 model = model_from_yaml(f.read())
 f.close()
-model.load_weights('arch_weights/MuGeRe Weights_T7.h5')
+model.load_weights('tuning_logs/2018-01-10 16-27-57/2018-01-10 16-27-57.hdf5')
 
 model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 
