@@ -1,0 +1,5 @@
+#Linux
+stereo to mono
+sox file file2 remix 1,2
+mono to spectogram
+sox -r 44100 nomefile -n spectrogram -r -o nomeoutfile.png
