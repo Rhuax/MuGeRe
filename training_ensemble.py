@@ -18,12 +18,26 @@ import glob
 
 batchSize = 128
 epochs = 30
+"""
 num_classes = 16
-nb_train_examples = 99924
-nb_valid_examples = 25001
+nb_train_examples = 96214
+nb_valid_examples = 24066
+"""
 
 trainsetDir = 'fma_medium_train/'
 testsetDir = 'fma_medium_test/'
+
+num_classes = 0
+nb_train_examples = 0
+nb_valid_examples = 0
+for genre in sorted(os.listdir(trainsetDir)):
+    if (len(glob.glob(trainsetDir + genre + '/*')) > 2000):
+        nb_train_examples += len(glob.glob(trainsetDir + genre + '/*'))
+        num_classes += 1
+
+for genre in sorted(os.listdir(testsetDir)):
+    if (len(glob.glob(testsetDir + genre + '/*')) > 2000):
+        nb_valid_examples += len(glob.glob(testsetDir + genre + '/*'))
 
 
 def calculateGenreWeight():
@@ -49,7 +63,7 @@ train_datagen = ImageDataGenerator(rescale=1. / 255)
 test_datagen = ImageDataGenerator(rescale=1. / 255)
 
 train_generator = train_datagen.flow_from_directory(directory=trainsetDir, batch_size=batchSize, target_size=(160, 150),
-                                                    shuffle=True)
+                                                    shuffle=False)
 test_generator = test_datagen.flow_from_directory(directory=testsetDir, batch_size=batchSize, target_size=(160, 150))
 
 model = keras.applications.resnet50.ResNet50(include_top=True, weights='None', input_tensor=None,
