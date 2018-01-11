@@ -6,14 +6,12 @@ import os
 import sys
 import time
 
-import keras
 import numpy as np
-from keras import Model
+from keras import Model, Input
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras.layers import AveragePooling2D
-from keras.layers import Dense, Activation, Flatten, BatchNormalization, Convolution2D, merge
+from keras.layers import Dense, Activation, Flatten, BatchNormalization, Convolution2D, merge,Conv2D
 from keras.preprocessing.image import ImageDataGenerator
-from tensorflow.contrib.keras.python.keras.engine import Input
 
 batchSize = 128
 epochs = 30
@@ -139,15 +137,12 @@ def cake(nip, nop, layers, std):
 
     return unit
 
-"""
-inp = Input(shape=(160, 150, 3))
+inp = Input(shape=(160,150,3))
 i = inp
 
+i = Convolution2D(16,3,3,border_mode='same')(i)
 
-"""
-i = Convolution2D(16, 3, 3, border_mode='same', input_shape=(160, 150, 3))
-
-i = cake(16, 32, 3, 1)(i)  # 32x32
+i = cake(16, 32, 3, 1)(inp)  # 32x32
 i = cake(32, 64, 3, 2)(i)  # 16x16
 i = cake(64, 128, 3, 2)(i)  # 8x8
 
@@ -160,7 +155,7 @@ i = Flatten()(i)  # 128
 i = Dense(10)(i)
 i = Activation('softmax')(i)
 
-model = Model(input=(160, 150, 3), output=i)
+model = Model(input=inp, output=i)
 
 
 """
