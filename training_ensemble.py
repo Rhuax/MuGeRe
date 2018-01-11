@@ -1,20 +1,19 @@
 from __future__ import print_function
+
+import datetime
+import glob
 import os
 import sys
 import time
-import datetime
-from collections import Counter
 
-import numpy as np
 import keras
-from keras.preprocessing.image import ImageDataGenerator
-from keras.optimizers import rmsprop
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, ZeroPadding2D
-from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
+import numpy as np
+from keras import Model
 from keras.callbacks import TensorBoard, ModelCheckpoint
-
-import glob
+from keras.layers import AveragePooling2D
+from keras.layers import Dense, Activation, Flatten, BatchNormalization, Convolution2D, merge
+from keras.preprocessing.image import ImageDataGenerator
+from tensorflow.contrib.keras.python.keras.engine import Input
 
 batchSize = 128
 epochs = 30
@@ -30,6 +29,7 @@ testsetDir = 'fma_medium_test/'
 num_classes = 0
 nb_train_examples = 0
 nb_valid_examples = 0
+
 for genre in sorted(os.listdir(trainsetDir)):
     if (len(glob.glob(trainsetDir + genre + '/*')) > 2000):
         nb_train_examples += len(glob.glob(trainsetDir + genre + '/*'))
@@ -66,12 +66,102 @@ train_generator = train_datagen.flow_from_directory(directory=trainsetDir, batch
                                                     shuffle=False)
 test_generator = test_datagen.flow_from_directory(directory=testsetDir, batch_size=batchSize, target_size=(160, 150))
 
-model = keras.applications.resnet50.ResNet50(include_top=True, weights='None', input_tensor=None,
+"""
+model = keras.applications.resnet50.ResNet50(include_top=True, weights=None, input_tensor=None,
                                              input_shape=(160, 150, 3), pooling=None, classes=num_classes)
+"""
 
 """
 Successivamente aggiungiamo altri eventuali modelli
 """
+
+
+def relu(x):
+    return Activation('relu')(x)
+
+
+def neck(nip, nop, stride):
+    def unit(x):
+        nBottleneckPlane = int(nop / 4)
+        nbp = nBottleneckPlane
+
+        if nip == nop:
+            ident = x
+
+            x = BatchNormalization(axis=-1)(x)
+            x = relu(x)
+            x = Convolution2D(nbp, 1, 1,
+                              subsample=(stride, stride))(x)
+
+            x = BatchNormalization(axis=-1)(x)
+            x = relu(x)
+            x = Convolution2D(nbp, 3, 3, border_mode='same')(x)
+
+            x = BatchNormalization(axis=-1)(x)
+            x = relu(x)
+            x = Convolution2D(nop, 1, 1)(x)
+
+            out = merge([ident, x], mode='sum')
+        else:
+            x = BatchNormalization(axis=-1)(x)
+            x = relu(x)
+            ident = x
+
+            x = Convolution2D(nbp, 1, 1,
+                              subsample=(stride, stride))(x)
+
+            x = BatchNormalization(axis=-1)(x)
+            x = relu(x)
+            x = Convolution2D(nbp, 3, 3, border_mode='same')(x)
+
+            x = BatchNormalization(axis=-1)(x)
+            x = relu(x)
+            x = Convolution2D(nop, 1, 1)(x)
+
+            ident = Convolution2D(nop, 1, 1,
+                                  subsample=(stride, stride))(ident)
+
+            out = merge([ident, x], mode='sum')
+
+        return out
+
+    return unit
+
+
+def cake(nip, nop, layers, std):
+    def unit(x):
+        for i in range(layers):
+            if i == 0:
+                x = neck(nip, nop, std)(x)
+            else:
+                x = neck(nop, nop, 1)(x)
+        return x
+
+    return unit
+
+"""
+inp = Input(shape=(160, 150, 3))
+i = inp
+
+
+"""
+i = Convolution2D(16, 3, 3, border_mode='same', input_shape=(160, 150, 3))
+
+i = cake(16, 32, 3, 1)(i)  # 32x32
+i = cake(32, 64, 3, 2)(i)  # 16x16
+i = cake(64, 128, 3, 2)(i)  # 8x8
+
+i = BatchNormalization(axis=-1)(i)
+i = relu(i)
+
+i = AveragePooling2D(pool_size=(8, 8), border_mode='valid')(i)  # 1x1
+i = Flatten()(i)  # 128
+
+i = Dense(10)(i)
+i = Activation('softmax')(i)
+
+model = Model(input=(160, 150, 3), output=i)
+
 
 """
 model = Sequential()
