@@ -51,7 +51,8 @@ def calculateGenreWeight():
 
 tb = TensorBoard(batch_size=batchSize, log_dir='./logs')  # logs
 model_path = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H-%M-%S')
-os.mkdir('tuning_logs/' + model_path)
+model_path='2018-01-12 02-33-45'
+#os.mkdir('tuning_logs/' + model_path)
 checkpoint = ModelCheckpoint('tuning_logs/' + model_path + '/' + model_path + '.hdf5', monitor='val_acc', verbose=1,
                              save_best_only=True, mode='max')
 
@@ -177,7 +178,7 @@ model.add(Dense(num_classes, activation='softmax'))
 # Compile model
 
 optimizer = Adam()
-
+model.load_weights('tuning_logs/2018-01-12 02-33-45/2018-01-12 02-33-45.hdf5')
 model.compile(loss='categorical_crossentropy',
 
               optimizer=optimizer,
