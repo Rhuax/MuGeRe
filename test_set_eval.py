@@ -31,11 +31,13 @@ generator = datagen.flow_from_directory(
 """for i in enumerate(generator.filenames):
     print(i)"""
 
-predictions=model.predict_generator(generator,steps=482)
+predictions=model.predict_generator(generator,steps=482) #Perché 482 steps?
+#print(predictions) senza che io stia ad aspettare la print, com'è fatta predictions?
+#print(generator) idem come sopra
 confusion_matrix=np.zeros((10,10))
 accuracy=0
-for i,n in enumerate(generator.filenames):
-    my_pred=np.argmax(predictions[i])
+for i,n in enumerate(generator.filenames):  #cicla sui file da valutare, i ed n ciclano su righe e colonne di una matrice che non sono sicuro di sapere com'è fatta
+    my_pred=np.argmax(predictions[i])       #prendo la classe con l'accuratezza maggiore? probabilmente le colonne hanno l'acc per ogni genere le righe il singolo file
     column=-1
     if n.startswith("Classical"):
         column = 0
@@ -77,7 +79,7 @@ for i,n in enumerate(generator.filenames):
         column = 9
         if my_pred == 9:
             accuracy += 1
-    confusion_matrix[my_pred][column]+=1
+    confusion_matrix[my_pred][column]+=1        #aggiorno la matrice di confusione gg ez
 
 print(confusion_matrix)
 print(accuracy/(np.shape(predictions)[0]))
