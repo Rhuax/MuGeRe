@@ -177,7 +177,7 @@ model.add(Dense(num_classes, activation='softmax'))
 
 # Compile model
 
-optimizer = Adam()
+optimizer = RMSprop(0.0000075)
 model.load_weights('tuning_logs/2018-01-12 02-33-45/2018-01-12 02-33-45.hdf5')
 model.compile(loss='categorical_crossentropy',
 
