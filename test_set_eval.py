@@ -4,10 +4,33 @@ from keras.models import model_from_yaml,model_from_json
 from keras.preprocessing.image import ImageDataGenerator
 np.set_printoptions(suppress=True,linewidth=300)
 
-img_width=160
-img_height=150
+img_width = 160
+img_height = 150
 
 
+def compare_song_class(prediction, genre):
+    if genre.startswith("Classical") and prediction == 0:
+        return prediction
+    elif genre.startswith("Electronic") and prediction == 1:
+        return prediction
+    elif genre.startswith("Experimental") and prediction == 2:
+        return prediction
+    elif genre.startswith("Folk") and prediction == 3:
+        return prediction
+    elif genre.startswith("Hip-Hop") and prediction == 4:
+        return prediction
+    elif genre.startswith("Instrumental") and prediction == 5:
+        return prediction
+    elif genre.startswith("International") and prediction == 6:
+        return prediction
+    elif genre.startswith("Old-Time_Historic") and prediction == 7:
+        return prediction
+    elif genre.startswith("Pop") and prediction == 8:
+        return prediction
+    elif genre.startswith("Rock") and prediction == 9:
+        return prediction
+    else:
+        return -1
 
 f = open('tuning_logs/2018-01-12 02-33-45/2018-01-12 02-33-45_ARCH.json', 'r')
 model = model_from_json(f.read())
@@ -28,60 +51,32 @@ generator = datagen.flow_from_directory(
         class_mode=None,
         shuffle=False)
 
-"""for i in enumerate(generator.filenames):
-    print(i)"""
+# Initialization
+confusion_matrix = np.zeros((10, 10))
+accuracy = 0
+song_genres = np.zeros(10)
+spectrogram = -1
 
-predictions=model.predict_generator(generator,steps=482) #Perché 482 steps?
-#print(predictions) senza che io stia ad aspettare la print, com'è fatta predictions?
-#print(generator) idem come sopra
-confusion_matrix=np.zeros((10,10))
-accuracy=0
-for i,n in enumerate(generator.filenames):  #cicla sui file da valutare, i ed n ciclano su righe e colonne di una matrice che non sono sicuro di sapere com'è fatta
-    my_pred=np.argmax(predictions[i])       #prendo la classe con l'accuratezza maggiore? probabilmente le colonne hanno l'acc per ogni genere le righe il singolo file
-    column=-1
-    if n.startswith("Classical"):
-        column = 0
-        if my_pred == 0:
+predictions = model.predict_generator(generator, steps=482)
+#np.savetxt("predictions.txt", predictions)
+for i, n in enumerate(sorted(generator.filenames)):
+    my_pred = np.argmax(predictions[i])
+    spectrogram += 1
+    if spectrogram == 5:
+        # If prediction is valid, update accuracy
+        column = compare_song_class(np.argmax(song_genres), n)      # Controllare
+        if column != -1:
             accuracy += 1
-    elif n.startswith("Electronic"):
-        column = 1
-        if my_pred == 1:
-            accuracy += 1
-    elif n.startswith("Experimental"):
-        column = 2
-        if my_pred == 2:
-            accuracy += 1
-    elif n.startswith("Folk"):
-        column = 3
-        if my_pred == 3:
-            accuracy += 1
-    elif n.startswith("Hip-Hop"):
-        column = 4
-        if my_pred == 4:
-            accuracy += 1
-    elif n.startswith("Instrumental"):
-        column = 5
-        if my_pred == 5:
-            accuracy += 1
-    elif n.startswith("International"):
-        column = 6
-        if my_pred == 6:
-            accuracy += 1
-    elif n.startswith("Old-Time_Historic"):
-        column = 7
-        if my_pred == 7:
-            accuracy += 1
-    elif n.startswith("Pop"):
-        column = 8
-        if my_pred == 8:
-            accuracy += 1
-    elif n.startswith("Rock"):
-        column = 9
-        if my_pred == 9:
-            accuracy += 1
-    confusion_matrix[my_pred][column]+=1        #aggiorno la matrice di confusione gg ez
+        # Reset all variables
+        spectrogram = -1
+        song_genres = np.zeros(10)
+        # Update confusion matrix
+        # La matrice di confusione è andata a puttane perché quando non azzecca perdo il valore di column che è a -1, kek sry
+        confusion_matrix[my_pred][column] += 1
+    else:
+        song_genres[my_pred] += predictions[i][my_pred]             # Controllare
 
 print(confusion_matrix)
-print(accuracy/(np.shape(predictions)[0]))
+print(accuracy/((np.shape(predictions)[0])//5))
 
 
