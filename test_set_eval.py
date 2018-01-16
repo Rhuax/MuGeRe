@@ -1,6 +1,6 @@
 import numpy as np
 from keras.optimizers import SGD
-from keras.models import model_from_yaml,model_from_json
+from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator
 np.set_printoptions(suppress=True,linewidth=300)
 
@@ -74,7 +74,7 @@ for i, n in enumerate(sorted(generator.filenames)):
         # Reset all variables
         spectrogram = -1
         song_genres = np.zeros(10)
-    song_genres[my_pred] += predictions[i][my_pred]             # Controllare
+    song_genres += predictions[i]            # Controllare
 
 print("Correctly classified songs: ")
 print(right)
