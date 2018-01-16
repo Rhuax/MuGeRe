@@ -32,6 +32,29 @@ def compare_song_class(prediction, genre):
     else:
         return False
 
+
+def def_genre_from_str(genre):
+    if genre.startswith("Classical"):
+        return 0
+    elif genre.startswith("Electronic"):
+        return 1
+    elif genre.startswith("Experimental"):
+        return 2
+    elif genre.startswith("Folk"):
+        return 3
+    elif genre.startswith("Hip-Hop"):
+        return 4
+    elif genre.startswith("Instrumental"):
+        return 5
+    elif genre.startswith("International"):
+        return 6
+    elif genre.startswith("Old-Time_Historic"):
+        return 7
+    elif genre.startswith("Pop"):
+        return 8
+    elif genre.startswith("Rock"):
+        return 9
+
 f = open('tuning_logs/2018-01-12 02-33-45/2018-01-12 02-33-45_ARCH.json', 'r')
 model = model_from_json(f.read())
 f.close()
@@ -52,7 +75,7 @@ generator = datagen.flow_from_directory(
         shuffle=False)
 
 # Initialization
-#confusion_matrix = np.zeros((10, 10))
+confusion_matrix = np.zeros((10, 10))
 right = np.zeros(10)
 wrong = np.zeros(10)
 accuracy = 0
@@ -60,7 +83,6 @@ song_genres = np.zeros(10)
 spectrogram = -1
 
 predictions = model.predict_generator(generator, steps=482)
-#np.savetxt("predictions.txt", predictions)
 for i, n in enumerate(sorted(generator.filenames)):
     my_pred = np.argmax(predictions[i])
     spectrogram += 1
@@ -74,13 +96,35 @@ for i, n in enumerate(sorted(generator.filenames)):
         # Reset all variables
         spectrogram = -1
         song_genres = np.zeros(10)
-    song_genres += predictions[i]            # Controllare
+    confusion_matrix[my_pred][def_genre_from_str(n)] += 1
+    song_genres += predictions[i]
 
-print("Correctly classified songs: ")
-print(right)
-print("Misclassified songs: ")
-print(wrong)
+
+for i in range(10):
+    if i == 0:
+        print("Classica")
+    elif i == 1:
+        print("Electronic")
+    elif i == 2:
+        print("Experimental")
+    elif i == 3:
+        print("Folk")
+    elif i == 4:
+        print("Hip-Hop")
+    elif i == 5:
+        print("Instrumental")
+    elif i == 6:
+        print("International")
+    elif i == 7:
+        print("Old Time Historic")
+    elif i == 8:
+        print("Pop")
+    elif i == 9:
+        print("Rock")
+    print('{} su {} - Percentuale {}'.format(right[i], right[i] + wrong[i], right[i] / (right[i] + wrong[i])))
 print("Total accuracy on test set: ")
 print(accuracy/((np.shape(predictions)[0])//5))
+print("\nConfusion matrix:")
+print(confusion_matrix)
 
 
