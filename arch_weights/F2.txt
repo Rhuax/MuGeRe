@@ -1,0 +1,48 @@
+#Batch Size: 128
+#Epochs: 30
+#Training set normalization: ON
+
+model = Sequential()
+
+model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=(2,15), strides=(2,15), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=32, kernel_size=(3,3), strides=(3,3),activation="elu", kernel_initializer='glorot_normal'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Conv2D(filters=16, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Flatten())
+model.add(Dropout(0.5))
+model.add(Dense(128, activation='elu', kernel_initializer='glorot_normal'))
+model.add(Dense(num_classes, activation='softmax'))
+
+#Compile model
+
+optimizer = 'adam'
+
+model.compile(loss='categorical_crossentropy',
+
+              optimizer=optimizer,
+
+              metrics=['accuracy'])
+
+@@@RESULTS@@@
+Classica
+73.0 su 131.0 - Percentuale 0.5572519083969466
+Electronic
+942.0 su 1495.0 - Percentuale 0.6301003344481605
+Experimental
+41.0 su 127.0 - Percentuale 0.3228346456692913
+Folk
+160.0 su 350.0 - Percentuale 0.45714285714285713
+Hip-Hop
+373.0 su 516.0 - Percentuale 0.7228682170542635
+Instrumental
+75.0 su 222.0 - Percentuale 0.33783783783783783
+International
+27.0 su 69.0 - Percentuale 0.391304347826087
+Old Time Historic
+101.0 su 108.0 - Percentuale 0.9351851851851852
+Pop
+2.0 su 7.0 - Percentuale 0.2857142857142857
+Rock
+1323.0 su 1788.0 - Percentuale 0.7399328859060402
+Total accuracy on test set: 
+0.6476210263868689
