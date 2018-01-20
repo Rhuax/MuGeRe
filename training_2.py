@@ -21,7 +21,7 @@ import os
 
 batchSize = 128
 
-epochs = 12
+epochs = 20
 
 num_classes = 10
 
@@ -76,19 +76,20 @@ model.add(Dense(num_classes, activation='softmax'))
 
 model = Sequential()
 
-model.add(Conv2D(input_shape=(160, 150, 3), filters=32, kernel_size=(2,15), strides=(2,15), activation="elu", kernel_initializer='glorot_normal'))
-model.add(Conv2D(filters=16, kernel_size=(3,3), strides=(3,3),activation="elu", kernel_initializer='glorot_normal'))
-#model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
-model.add(Conv2D(filters=8, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=(2,15), strides=(2,15), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(2,2),activation="elu", kernel_initializer='glorot_normal'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
 model.add(Flatten())
 model.add(Dropout(0.5))
 model.add(Dense(128, activation='elu', kernel_initializer='glorot_normal'))
 model.add(Dense(num_classes, activation='softmax'))
 
 
+
 #Compile model
 
-optimizer = 'adam'
+optimizer = 'adadelta'
 #optimizer = sgd(lr=0.01, momentum=0.8, decay=0.0, nesterov=True)
 model.compile(loss='categorical_crossentropy',
 

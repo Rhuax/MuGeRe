@@ -55,10 +55,10 @@ def def_genre_from_str(genre):
     elif genre.startswith("Rock"):
         return 9
 
-f = open('arch_weights/MuGeRe Architecture_F3.yaml', 'r')
+f = open('arch_weights/MuGeRe Architecture_F.yaml', 'r')
 model = model_from_yaml(f.read())
 f.close()
-model.load_weights('arch_weights/MuGeRe Weights_F3.h5')
+model.load_weights('arch_weights/MuGeRe Weights_F.h5')
 
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
