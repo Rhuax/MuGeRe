@@ -15,7 +15,7 @@ model.add(Dense(num_classes, activation='softmax'))
 
 #Compile model
 
-optimizer = 'adam'
+optimizer = 'adadelta'
 
 model.compile(loss='categorical_crossentropy',
 

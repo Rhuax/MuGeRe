@@ -1,0 +1,61 @@
+#Batch Size: 64
+#Epochs: 20
+#Training set normalization: ON
+#Uguale a F5, cambia solo il batch size
+
+model = Sequential()
+
+model.add(Conv2D(input_shape=(160, 150, 3), filters=64, kernel_size=(2,15), strides=(2,15), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(2,2),activation="elu", kernel_initializer='glorot_normal'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+model.add(Conv2D(filters=64, kernel_size=(2,2), strides=(2,2), activation="elu", kernel_initializer='glorot_normal'))
+model.add(Flatten())
+model.add(Dropout(0.5))
+model.add(Dense(128, activation='elu', kernel_initializer='glorot_normal'))
+model.add(Dense(num_classes, activation='softmax'))
+
+#Compile model
+
+optimizer = 'adadelta'
+
+model.compile(loss='categorical_crossentropy',
+
+              optimizer=optimizer,
+
+              metrics=['accuracy'])
+
+@@@RESULTS@@@
+Classica
+63.0 su 98.0 - Percentuale 0.6428571428571429
+Electronic
+1123.0 su 1753.0 - Percentuale 0.6406160867084997
+Experimental
+86.0 su 193.0 - Percentuale 0.44559585492227977
+Folk
+176.0 su 328.0 - Percentuale 0.5365853658536586
+Hip-Hop
+360.0 su 475.0 - Percentuale 0.7578947368421053
+Instrumental
+85.0 su 225.0 - Percentuale 0.37777777777777777
+International
+29.0 su 70.0 - Percentuale 0.4142857142857143
+Old Time Historic
+92.0 su 93.0 - Percentuale 0.989247311827957
+Pop
+10.0 su 31.0 - Percentuale 0.3225806451612903
+Rock
+1195.0 su 1547.0 - Percentuale 0.7724628312863607
+Total accuracy on test set: 
+0.6688136297527529
+
+Confusion matrix:
+[[ 298.   37.   39.   29.    0.   76.    6.    1.    1.   31.]
+ [  52. 4986.  951.  200.  530.  646.  376.    7.  273.  738.]
+ [  44.  218.  375.   49.   17.   50.   15.   24.   35.  148.]
+ [  71.  106.  112.  738.    5.  132.   86.    0.   95.  217.]
+ [   1.  270.   47.   69. 1525.   15.  170.    1.  133.  166.]
+ [ 104.  189.  183.  137.   29.  253.   35.    5.   34.  124.]
+ [  19.   38.   30.   37.   12.   14.  142.    1.   20.   46.]
+ [   2.    7.    6.    1.    0.    1.    0.  462.    0.    1.]
+ [   2.   15.   16.   18.    0.   11.   16.    0.   23.   22.]
+ [  27.  446.  492.  241.   80.  152.  173.   10.  573. 5606.]]
